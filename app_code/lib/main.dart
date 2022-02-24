@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -40,8 +42,11 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
   late AnimationController _controller;
   late List<Animation<Offset>> _offsetAnimation;
 
-  late Color _boxColor = Colors.orangeAccent;
-  double _boxWidth = 20;
+  Color _boxColor = Colors.orangeAccent;
+  Color _swapColor = Colors.lightBlue;
+  Color _notSwapColor = Colors.deepOrange;
+  Color _doneColor = Colors.lightGreen;
+  double _boxWidth = 25;
   double _boxMargin = 10;
 
   // inplace bubble sort
@@ -57,9 +62,6 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
           // animate
           _beforeAnimateSwap(j, j + 1);
 
-          await Future.delayed(Duration(seconds: 1));
-          _afterAnimateSwap(j, j + 1);
-
           // also update the _indToKeyNum
           setState(() {
             int temp2 = _indToKeyNum[j];
@@ -73,13 +75,69 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
             _arr[j] = _arr[j + 1];
             _arr[j + 1] = temp;
           });
+        } else {
+          _notSwapAnimation(j, j + 1);
         }
+
+        await Future.delayed(Duration(seconds: 1));
+        _afterAnimateSwap(j, j + 1);
       }
+      await Future.delayed(Duration(seconds: 1));
+      _doneColorAnimation(n - i - 1);
     }
+    await Future.delayed(Duration(seconds: 1));
+    _doneColorAnimation(0);
   }
 
+  void _doneColorAnimation(int i) {
+    setState(() {
+      _children[_indToKeyNum[i]] =
+          BoxWidget(
+            key: _keys[_indToKeyNum[i]],
+            color: _doneColor,
+            position: Tween<Offset>(
+              begin: Offset(_curPosition[_indToKeyNum[i]], 0.0),
+              end: Offset(_curPosition[_indToKeyNum[i]], 0.0),
+            ).animate(_controller),
+            height: _widgetHeight[_indToKeyNum[i]],
+            width: _boxWidth,
+            margin: _boxMargin,
+          );
+    });
+  }
+
+  void _notSwapAnimation(int i, int j) {
+    setState(() {
+      _children[_indToKeyNum[i]] =
+          BoxWidget(
+            key: _keys[_indToKeyNum[i]],
+            color: _notSwapColor,
+            position: Tween<Offset>(
+              begin: Offset(_curPosition[_indToKeyNum[i]], 0.0),
+              end: Offset(_curPosition[_indToKeyNum[i]], 0.0),
+            ).animate(_controller),
+            height: _widgetHeight[_indToKeyNum[i]],
+            width: _boxWidth,
+            margin: _boxMargin,
+          );
+
+      _children[_indToKeyNum[j]] =
+          BoxWidget(
+            key: _keys[_indToKeyNum[j]],
+            color: _notSwapColor,
+            position: Tween<Offset>(
+              begin: Offset(_curPosition[_indToKeyNum[j]], 0.0),
+              end: Offset(_curPosition[_indToKeyNum[j]], 0.0),
+            ).animate(_controller),
+            height: _widgetHeight[_indToKeyNum[j]],
+            width: _boxWidth,
+            margin: _boxMargin,
+          );
+    });
+  }
 
   void _childrenUpdateHelper() {
+    _children = [];
     for (int i = 0; i < _arr.length; i++) {
       Key curKey = UniqueKey();
       _keys.add(curKey);
@@ -88,7 +146,7 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
           key: curKey,
           color: _boxColor,
           position: _offsetAnimation[i],
-          height: _arr[i] * 2,
+          height: _widgetHeight[i],
           width: _boxWidth,
           margin: _boxMargin,
         ),
@@ -97,8 +155,8 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
   }
   
   void _beforeSwapTwoWidgetByIndex(int i, int j) {
-    print("current index: " + i.toString() + " ," + j.toString());
-    print("current keyNum: " + _indToKeyNum[i].toString() + " ," + _indToKeyNum[j].toString());
+    // print("current index: " + i.toString() + " ," + j.toString());
+    // print("current keyNum: " + _indToKeyNum[i].toString() + " ," + _indToKeyNum[j].toString());
 
     double distanceForI = (j - i).toDouble();
 
@@ -106,7 +164,7 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
       _children[_indToKeyNum[i]] =
           BoxWidget(
             key: _keys[_indToKeyNum[i]],
-            color: _boxColor,
+            color: _swapColor,
             position: Tween<Offset>(
               begin: Offset(_curPosition[_indToKeyNum[i]], 0.0),
               end: Offset(_curPosition[_indToKeyNum[i]] + distanceForI, 0.0),
@@ -121,7 +179,7 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
       _children[_indToKeyNum[j]] =
           BoxWidget(
             key: _keys[_indToKeyNum[j]],
-            color: _boxColor,
+            color: _swapColor,
             position: Tween<Offset>(
               begin: Offset(_curPosition[_indToKeyNum[j]], 0.0),
               end: Offset(_curPosition[_indToKeyNum[j]] - distanceForI, 0.0),
@@ -175,44 +233,58 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
     _afterSwapTwoWidgetByIndex(i, j);
   }
 
-  void _swapTest() {
-    int i = 5; int j = 2;
-    _beforeSwapTwoWidgetByIndex(i, j);
-    _controller.forward();
+  // void _swapTest() {
+  //   int i = 5; int j = 2;
+  //   _beforeSwapTwoWidgetByIndex(i, j);
+  //   _controller.forward();
+  // }
+
+  List<int> _generateRandomList(int n, int upper) {
+    List<int> arr = [];
+    var random = Random();
+    for (int i = 0; i < n; i++) {
+      arr.add(1 + random.nextInt(upper + 1));
+    }
+    return arr;
+  }
+
+  void _initStatesByArr(List<int> arr) {
+    setState(() {
+      _arr = arr;
+      _widgetHeight = [];
+      for (int i = 0; i < _arr.length; i++) {
+        _widgetHeight.add(_arr[i] * 2);
+      }
+      _controller = AnimationController(
+        duration: const Duration(seconds: 1),
+        vsync: this,
+      );
+      // used to swap two element
+      _offsetAnimation = List.generate(
+        _arr.length,
+            (index) => Tween<Offset>(
+          begin: const Offset(0.0, 0.0),
+          end: const Offset(0.0, 0.0),
+        ).animate(_controller),
+      );
+      // update the children;
+      _keys = [];
+      _indToKeyNum = [];
+      for (int i = 0; i < _arr.length; i++) {
+        _indToKeyNum.add(i);
+      }
+      _childrenUpdateHelper();
+      _curPosition = [];
+      for (int i = 0; i < _arr.length; i++) {
+        _curPosition.add(0.0);
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _arr = [100,69,30,20,78,58];
-    _widgetHeight = [];
-    for (int i = 0; i < _arr.length; i++) {
-      _widgetHeight.add(_arr[i] * 2);
-    }
-    _controller = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-    // used to swap two element
-    _offsetAnimation = List.generate(
-      _arr.length,
-          (index) => Tween<Offset>(
-        begin: const Offset(0.0, 0.0),
-        end: const Offset(0.0, 0.0),
-      ).animate(_controller),
-    );
-    // update the children;
-    _keys = [];
-    _indToKeyNum = [];
-    for (int i = 0; i < _arr.length; i++) {
-      _indToKeyNum.add(i);
-    }
-    _children = [];
-    _childrenUpdateHelper();
-    _curPosition = [];
-    for (int i = 0; i < _arr.length; i++) {
-      _curPosition.add(0.0);
-    }
+    _initStatesByArr(_generateRandomList(6, 100));
   }
 
   // void _test1() {
@@ -238,14 +310,29 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: _children,
             ),
-            ElevatedButton(
-              onPressed: _childrenUpdateHelper,
-              child: const Text("Create"),
-            ),
-            ElevatedButton(
-              onPressed: _bubbleSort,
-              child: const Text("swap"),
-            ),
+            SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                width: 100, // <-- Your width
+                height: 40,
+                  child: ElevatedButton(
+                  onPressed: _bubbleSort,
+                  child: const Text("Random"),
+                  ),
+                ),
+                SizedBox(width: 40,),
+                SizedBox(
+                  width: 100, // <-- Your width
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: _bubbleSort,
+                    child: const Text("Sort"),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
     );
@@ -273,8 +360,12 @@ class BoxWidget extends StatelessWidget {
           margin: EdgeInsets.all(margin),
           height: height,
           width: width,
-          color: color,
-        ),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(child: Text("${height.toInt() ~/ 2}", style: Theme.of(context).textTheme.overline,),),
+        )
     );
   }
 }
