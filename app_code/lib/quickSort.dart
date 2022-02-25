@@ -10,6 +10,7 @@ class _QuickSortVisualizerState extends State<QuickSortVisualizer>
   late List<int> _indToKeyNum;
   late List<Widget> _children;
   late List<double> _curPosition;
+  late int _iPointer;
 
   late List<Key> _keys;
 
@@ -69,8 +70,15 @@ class _QuickSortVisualizerState extends State<QuickSortVisualizer>
 
 
     int i = low - 1;
+    // setState(() {
+    //   _iPointer = i;
+    // });
+
 
     for (int j = low; j < high; j++) {
+      setState(() {
+        _iPointer = i;
+      });
 
       // When j is < than pivot element we increment i and swap arr[i] and arr[j]
       await Future.delayed(Duration(seconds: 1));
@@ -86,6 +94,7 @@ class _QuickSortVisualizerState extends State<QuickSortVisualizer>
 
 
         i++;
+
 
 
         await _swap1(list, i, j);
@@ -506,6 +515,7 @@ class _QuickSortVisualizerState extends State<QuickSortVisualizer>
   void _initStatesByArr(List<int> arr) {
     setState(() {
       _arr = arr;
+      _iPointer = -1;
       _widgetHeight = [];
       for (int i = 0; i < _arr.length; i++) {
         _widgetHeight.add(_arr[i] * 2);
@@ -569,55 +579,86 @@ class _QuickSortVisualizerState extends State<QuickSortVisualizer>
             ),
             child: RichText(
               text: TextSpan(
-                text:            "BubbleSort(int[] arr) {\n",
-                style: TextStyle(fontSize: 15, fontStyle: FontStyle.normal),
+                text:            'int partition(int array[], int low, int high) {\n',
+                style: TextStyle(fontSize: 12, fontStyle: FontStyle.normal),
                 children: const <TextSpan>[
-                  TextSpan(text: '    int n = arr.length;\n'),
-                  TextSpan(text: '    for (int i = 0; i < n - 1; i++) {\n'),
-                  TextSpan(text: '      for (int j = 0; j < n - i - 1; j++) {\n'),
-                  TextSpan(text: '        if (arr[j] > arr[j + 1]) {\n'),
-                  TextSpan(text: '            int temp = arr[j];\n'),
-                  TextSpan(text: '            arr[j] = arr[j + 1];\n'),
-                  TextSpan(text: '            arr[j + 1] = temp;\n'),
-                  TextSpan(text: '        }\n'),
+                  TextSpan(text: '    int pivot = array[high];\n'),
+                  TextSpan(text: '    int i = (low - 1);\n'),
+                  TextSpan(text: '    for (int j = low; j < high; j++) {\n'),
+                  TextSpan(text: '      if (array[j] <= pivot) {\n'),
+                  TextSpan(text: '        i++;\n'),
+                  TextSpan(text: '        int temp = array[i];\n'),
+                  TextSpan(text: '        array[i] = array[j];\n'),
+                  TextSpan(text: '        array[j] = temp;\n'),
                   TextSpan(text: '      }\n'),
                   TextSpan(text: '    }\n'),
+                  TextSpan(text: '    int temp = array[i + 1];\n'),
+                  TextSpan(text: '    array[i + 1] = array[high];\n'),
+                  TextSpan(text: '    array[high] = temp;\n'),
+                  TextSpan(text: '    return (i + 1);\n'),
                   TextSpan(text: '}\n'),
+                  TextSpan(text: '\n'),
+                  TextSpan(text: 'void quickSort(int array[], int low, int high) {\n'),
+                  TextSpan(text: '    if (low < high) {\n'),
+                  TextSpan(text: '      int pi = partition(array, low, high);\n'),
+                  TextSpan(text: '      quickSort(array, low, pi - 1);\n'),
+                  TextSpan(text: '      quickSort(array, pi + 1, high);\n'),
+                  TextSpan(text: '    }\n'),
+                  TextSpan(text: '  }\n'),
+                  TextSpan(text: '}\n'),
+
                 ],
               ),
             ),
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 20),
           //  Color _boxColor = Colors.orangeAccent;
           //   Color _swapColor = Colors.lightBlue;
           //   Color _notSwapColor = Colors.deepOrange;
           //   Color _doneColor = Colors.lightGreen;
-          Container(
-            alignment: Alignment.center,
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(fontSize: 15, fontStyle: FontStyle.normal),
-                children: <InlineSpan>[
-                  WidgetSpan(
-                      child: Container(color: _pivotColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
-                  TextSpan(text: 'pivot\n'),
-
-                  WidgetSpan(
-                      child: Container(color: _swapColor1, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
-                  TextSpan(text: 'swapping\n'),
-
-                  WidgetSpan(
-                      child: Container(color: _jColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
-                  TextSpan(text: 'j pointer\n'),
-
-                  WidgetSpan(
-                      child: Container(color: _doneColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
-                  TextSpan(text: 'sorted part\n'),
-                ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.normal),
+                  children: <InlineSpan>[
+                    TextSpan(text: 'Time Complexity:\n'),
+                    TextSpan(text: '\n'),
+                    TextSpan(text: 'O(n^2)\n'),
+                    TextSpan(text: '(Amortized O(nlog(n))\n'),
+                  ],
+                ),
               ),
-            ),
+              Container(
+                alignment: Alignment.center,
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.normal),
+                    children: <InlineSpan>[
+                      WidgetSpan(
+                          child: Container(color: _pivotColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                      TextSpan(text: 'pivot\n'),
+
+                      WidgetSpan(
+                          child: Container(color: _swapColor1, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                      TextSpan(text: 'swapping\n'),
+
+                      WidgetSpan(
+                          child: Container(color: _jColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                      TextSpan(text: 'j pointer\n'),
+
+                      WidgetSpan(
+                          child: Container(color: _doneColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                      TextSpan(text: 'sorted part\n'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 10),
+          Text('i = ${_iPointer}, next greater value = arr[i+1] = ${_arr[_iPointer+1]}', style: TextStyle(color: Colors.orangeAccent)),
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,

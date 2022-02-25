@@ -5,6 +5,7 @@ import 'package:app_code/quickSort.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+
 void main() {
   runApp(MyApp());
 }
@@ -15,11 +16,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: const Text("BubbleSort Demo")),
+        appBar: AppBar(title: const Text("Sort Algorithm Demo")),
         body: SizedBox.expand(
         child: Container(
           color: const Color(0xFF15202D),
-          child: QuickSortVisualizer(),
+          child: PageView(
+            children: <Widget>[
+              BubbleSortVisualizer(),
+              QuickSortVisualizer(),
+            ],
+          ),
         ),
         ),
       ),
