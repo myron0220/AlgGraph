@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(MyApp());
@@ -305,6 +306,57 @@ class _BubbleSortVisualizerState extends State<BubbleSortVisualizer>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: RichText(
+                text: TextSpan(
+                  text:            "BubbleSort(int[] arr) {\n",
+                  style: TextStyle(fontSize: 15, fontStyle: FontStyle.normal),
+                  children: const <TextSpan>[
+                    TextSpan(text: '    int n = arr.length;\n'),
+                    TextSpan(text: '    for (int i = 0; i < n - 1; i++) {\n'),
+                    TextSpan(text: '      for (int j = 0; j < n - i - 1; j++) {\n'),
+                    TextSpan(text: '        if (arr[j] > arr[j + 1]) {\n'),
+                    TextSpan(text: '            int temp = arr[j];\n'),
+                    TextSpan(text: '            arr[j] = arr[j + 1];\n'),
+                    TextSpan(text: '            arr[j + 1] = temp;\n'),
+                    TextSpan(text: '        }\n'),
+                    TextSpan(text: '      }\n'),
+                    TextSpan(text: '    }\n'),
+                    TextSpan(text: '}\n'),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 40),
+            //  Color _boxColor = Colors.orangeAccent;
+            //   Color _swapColor = Colors.lightBlue;
+            //   Color _notSwapColor = Colors.deepOrange;
+            //   Color _doneColor = Colors.lightGreen;
+            Container(
+              alignment: Alignment.center,
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(fontSize: 15, fontStyle: FontStyle.normal),
+                  children: <InlineSpan>[
+                    WidgetSpan(
+                        child: Container(color: _swapColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                    TextSpan(text: 'swapping\n'),
+                    WidgetSpan(
+                        child: Container(color: _notSwapColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                    TextSpan(text: 'not swapping\n'),
+                    WidgetSpan(
+                        child: Container(color: _doneColor, width: 10, height: 10, margin: EdgeInsets.only(right: 8.0),)),
+                    TextSpan(text: 'sorted part\n'),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 40),
             Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
