@@ -1,2 +1,3 @@
 # AlgGraph
 This will be a visualizer for most algorithm, data structure, and graph etc...
+Currently, there are two demos of bubble sort and quick sort, please navigate to
